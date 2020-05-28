@@ -9,17 +9,20 @@ import { LoggerService } from '../logger/logger.service';
 @Injectable()
 export class PaymentService {
 
+    driverName: string;
+
     constructor(
         private driver: PaymentDriver,
         @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
         private logger: LoggerService
     ) {
+        this.driverName = this.driver.name;
         this.logger.setContext('Payment Service');
     }
 
     async initializePayment(data: IPaymentInitializeArg): Promise<IPaymentInitializeResult> | null{
         const initResult = await this.driver.initialize(data).catch(e => {
-            this.logger.error(e.message, e.stack);
+            throw e;
         });
 
         if(initResult)
@@ -29,7 +32,7 @@ export class PaymentService {
                 bookingReference: initResult.reference,
                 amount: data.amount
             }).catch(e => {
-                this.logger.error(e.message, e.stack)
+                throw e;
             });
         }
 
@@ -39,7 +42,6 @@ export class PaymentService {
     async verifyPayment(reference: string): Promise<boolean> {
 
         const verification = await this.driver.verify(reference).catch(e => {
-            this.logger.error(e.message, e.stack)
             throw e;
         });
 

@@ -6,6 +6,7 @@ import { PaystackDriver } from './drivers/paystackDriver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Payment } from '../entities/payment.entity';
 import { LoggerModule } from '../logger/logger.module';
+import { PaymentController } from './payment.controller';
 
 @Module({
   imports: [ConfigModule, TypeOrmModule.forFeature([Payment]), LoggerModule],
@@ -16,6 +17,7 @@ import { LoggerModule } from '../logger/logger.module';
       provide: PaymentDriver,
       useClass: PaystackDriver
     }
-  ]
+  ],
+  controllers: [PaymentController]
 })
 export class PaymentModule {}

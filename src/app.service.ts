@@ -5,7 +5,6 @@ import { LoggerService } from './logger/logger.service';
 export class AppService {
   constructor(private logger: LoggerService) {}
   getHello(): string {
-    this.logger.error('Hello', 'none');
     return 'Hello World!';
   }
 }

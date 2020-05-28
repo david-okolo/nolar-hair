@@ -17,21 +17,30 @@ export class BookingController {
             message: 'Booking Creation Failed',
             data: {
                 payment: false,
-                paymentLink: '',
-                reference: ''
-            }
+                paymentLink: null,
+                reference: null
+            },
+            errors: []
         }
 
         const result = await this.bookingService.createBooking(createBookingDto).catch(e => {
             this.logger.error(e.message, e.stack)
         });
 
-        if(result && result.created) {
-            response.success = true;
-            response.message = 'Booking Creation Successful';
-            response.data.payment = result.paymentInitialized
-            response.data.paymentLink = result.paymentUrl
-            response.data.reference = result.reference
+        if(result) {
+
+            response.errors = result.errors;
+
+            if((result.created && result.paymentInitialized) || (result.created && !result.paymentRequested)) {
+                response.success = true;
+                response.message = 'Booking Creation Successful';
+            }
+            
+            if(result.created && result.paymentInitialized) {
+                response.data.payment = result.paymentInitialized
+                response.data.paymentLink = result.paymentUrl
+                response.data.reference = result.reference
+            }
         }
 
         return response;

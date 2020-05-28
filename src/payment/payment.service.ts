@@ -4,7 +4,7 @@ import { IPaymentInitializeArg, IPaymentInitializeResult } from './interface/pay
 import { InjectRepository } from '@nestjs/typeorm';
 import { Payment } from '../entities/payment.entity';
 import { Repository } from 'typeorm';
-import { LoggerService } from 'src/logger/logger.service';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class PaymentService {
@@ -24,9 +24,9 @@ export class PaymentService {
 
         if(initResult)
         {
-            await this.paymentRepository.insert({
+            await this.paymentRepository.save({
                 authorizationUrl: initResult.url,
-                reference: initResult.reference,
+                bookingReference: initResult.reference,
                 amount: data.amount
             }).catch(e => {
                 this.logger.error(e.message, e.stack)
@@ -40,21 +40,19 @@ export class PaymentService {
 
         const verification = await this.driver.verify(reference).catch(e => {
             this.logger.error(e.message, e.stack)
-            console.log(e);
             throw e;
         });
 
         if(verification && verification.status) {
             await this.paymentRepository.update(
                 { 
-                    reference: reference
+                    bookingReference: reference
                 },
                 {
                     verified: true,
                     success: true
                 }
             ).catch(e => {
-                console.log(e)
                 throw e;
             });
         }

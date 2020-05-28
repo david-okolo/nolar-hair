@@ -4,8 +4,8 @@ import { PaymentService } from './payment.service';
 import { PaymentDriver } from './interface/payment-driver.interface';
 import { PaystackDriver } from './drivers/paystackDriver';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Payment } from 'src/entities/payment.entity';
-import { LoggerModule } from 'src/logger/logger.module';
+import { Payment } from '../entities/payment.entity';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [ConfigModule, TypeOrmModule.forFeature([Payment]), LoggerModule],

@@ -5,10 +5,8 @@ export class Payment {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({
-        type: 'varchar'
-    })
-    reference: string
+    @Column()
+    bookingReference: string
 
     @Column({
         type: 'varchar'

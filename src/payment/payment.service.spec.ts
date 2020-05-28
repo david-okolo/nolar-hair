@@ -4,6 +4,7 @@ import { MockPayDriver } from './drivers/mockpayDriver';
 import { PaymentDriver } from './interface/payment-driver.interface';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Payment } from '../entities/payment.entity';
+import { LoggerService } from '../logger/logger.service';
 
 describe('PaymentService', () => {
   let service: PaymentService;
@@ -12,6 +13,7 @@ describe('PaymentService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
+        LoggerService,
         {
           provide: PaymentDriver,
           useClass: MockPayDriver
@@ -19,11 +21,13 @@ describe('PaymentService', () => {
         {
           provide: getRepositoryToken(Payment),
           useValue: {
-            insert: async () => {
+            save: async () => {
               return true;
             },
-            update: async () => {
-              return true;
+            update: async (condition) => {
+              if(condition.bookingReference === 'refFalse') {
+                throw new Error('(Verification Error)');
+              }
             }
           }
         }
@@ -49,12 +53,7 @@ describe('PaymentService', () => {
   });
 
   it('should correctly verify payment', async () => {
-    expect(await service.verifyPayment('refno')).toMatchObject({
-      currency: 'NGN',
-      amount: 500,
-      status: true,
-      date: '01/11/2020'
-    });
+    expect(await service.verifyPayment('refno')).toBeTruthy();
   })
 
   it('should throw error when payment verification fails', async () => {

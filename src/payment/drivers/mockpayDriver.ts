@@ -31,11 +31,6 @@ export class MockPayDriver extends PaymentDriver {
             date: '01/11/2020'
         }
 
-        if(reference === 'refFalse')
-        {
-            result.status = false
-        }
-
         return result;
     }
 }

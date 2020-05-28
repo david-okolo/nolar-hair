@@ -16,7 +16,7 @@ export class LoggerService extends Logger {
             format: combine(
                 timestamp(),
                 printf(({level, message, timestamp}) => {
-                    return `${timestamp} - ${level.toUpperCase} - ${message}`
+                    return `${timestamp} - ${level.toUpperCase()} - ${message}`
                 })
             ),
             transports: [
@@ -27,8 +27,17 @@ export class LoggerService extends Logger {
             ]
         });
     }
-    error(message: string, trace: string) {
-        this.logger.error(message)
-        super.error(message, trace);
+
+    error(message: string, trace?: any) {
+        this.logger.error(`${message} - ${trace}`);
     }
+
+    info(message: string, trace?: string) {
+        this.logger.info(`${message} - ${trace}`)
+    }
+
+    warn(message: string, trace?: string) {
+        this.logger.info(`${message} - ${trace}`);
+    }
+
 }

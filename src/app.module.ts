@@ -16,15 +16,17 @@ import { LoggerModule } from './logger/logger.module';
       envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, LoggerModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
+        type: "mysql",
         host: configService.get<string>('DATABASE_HOST'),
         port: configService.get<number>('DATABASE_PORT'),
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         entities: [Booking, Payment],
+        logging: true,
+        logger: 'file',
         synchronize: configService.get<string>('NODE_ENV') === 'production' ? false : true // remove in production
       }),
       inject: [ConfigService]

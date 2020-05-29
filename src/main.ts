@@ -8,6 +8,7 @@ async function bootstrap() {
 
   app.useLogger(LoggerService);
   app.useStaticAssets('public');
+  app.setGlobalPrefix('api');
 
   await app.listen(3000);
 }

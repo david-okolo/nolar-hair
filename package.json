@@ -9,6 +9,7 @@
     "make:env": "cp .env.example .env",
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "postbuild": "cp -R ./dist/. ${PWD} && mv main.js app.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

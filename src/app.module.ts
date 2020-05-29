@@ -25,8 +25,6 @@ import { LoggerModule } from './logger/logger.module';
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
         entities: [Booking, Payment],
-        logging: true,
-        logger: 'file',
         synchronize: configService.get<string>('NODE_ENV') === 'production' ? false : true // remove in production
       }),
       inject: [ConfigService]

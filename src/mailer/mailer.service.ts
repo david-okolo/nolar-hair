@@ -22,9 +22,9 @@ export class MailerService implements OnModuleInit {
             port: this.configService.get<number>('SMTP_PORT'),
             auth: {
                 user: this.configService.get<string>('SMTP_USERNAME'),
-                pass: this.configService.get<string>('SMTP_PASSWORD')
+                pass: this.configService.get<string>('SMTP_PASSWORD'),
             },
-            requireTLS: true
+            requireTLS: this.configService.get<boolean>('SMTP_TLS')
         });
     }
 

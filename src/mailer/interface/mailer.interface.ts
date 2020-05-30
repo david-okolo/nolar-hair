@@ -12,3 +12,7 @@ export interface MailOptions {
     viewName: string,
     input: object
 }
+
+export abstract class MailDriver {
+    abstract getOptions(): object
+}

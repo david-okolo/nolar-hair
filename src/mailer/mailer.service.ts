@@ -3,7 +3,7 @@ import { createTransport, Transporter } from 'nodemailer';
 import { ConfigService } from '@nestjs/config';
 import { JSDOM } from 'jsdom';
 
-import { Mailable, MailOptions } from './interface/mailer.interface';
+import { Mailable, MailOptions, MailDriver } from './interface/mailer.interface';
 import { ViewService } from '../view/view.service';
 
 @Injectable()
@@ -13,19 +13,12 @@ export class MailerService implements OnModuleInit {
 
     constructor(
         private configService: ConfigService,
-        private viewService: ViewService
+        private viewService: ViewService,
+        private mailDriver: MailDriver
     ) {}
 
     onModuleInit() {
-        this.transport = createTransport({
-            host: this.configService.get<string>('SMTP_HOST'),
-            port: this.configService.get<number>('SMTP_PORT'),
-            auth: {
-                user: this.configService.get<string>('SMTP_USERNAME'),
-                pass: this.configService.get<string>('SMTP_PASSWORD'),
-            },
-            requireTLS: this.configService.get<boolean>('SMTP_TLS')
-        });
+        this.transport = createTransport(this.mailDriver.getOptions());
     }
 
     createMailable(data): Mailable {

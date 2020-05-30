@@ -8,6 +8,8 @@ import { PaymentModule } from './payment/payment.module';
 import { Booking } from './entities/booking.entity';
 import { Payment } from './entities/payment.entity';
 import { LoggerModule } from './logger/logger.module';
+import { MailerModule } from './mailer/mailer.module';
+import { ViewModule } from './view/view.module';
 
 @Module({
   imports: [
@@ -30,7 +32,9 @@ import { LoggerModule } from './logger/logger.module';
       inject: [ConfigService]
     }),
     BookingModule,
-    PaymentModule
+    PaymentModule,
+    MailerModule,
+    ViewModule
   ],
   controllers: [AppController],
   providers: [AppService],

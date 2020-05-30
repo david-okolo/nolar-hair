@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { JSDOM } from 'jsdom';
 
 import { Mailable, MailOptions } from './interface/mailer.interface';
-import { ViewService } from 'src/view/view.service';
+import { ViewService } from '../view/view.service';
 
 @Injectable()
 export class MailerService implements OnModuleInit {

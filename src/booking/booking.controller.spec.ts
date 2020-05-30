@@ -18,9 +18,11 @@ describe('Booking Controller', () => {
             createBooking: async () => {
               return {
                 created: true,
+                paymentRequested: true,
                 paymentInitialized: true,
                 paymentUrl: 'http://paystack.com/',
-                reference: 'refNo'
+                reference: 'refNo',
+                errors: []
               }
             }
           }
@@ -49,8 +51,10 @@ describe('Booking Controller', () => {
       message: 'Booking Creation Successful',
       data: {
         payment: true,
-        paymentLink: 'http://paystack.com/'
-      }
+        paymentLink: 'http://paystack.com/',
+        reference: 'refNo',
+      },
+      errors: []
     }
 
     expect(await controller.create(body)).toMatchObject(result);

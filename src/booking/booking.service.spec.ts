@@ -5,6 +5,7 @@ import { Booking } from '../entities/booking.entity';
 import { PaymentService } from '../payment/payment.service';
 import { LoggerService } from '../logger/logger.service';
 import { ConfigService } from '@nestjs/config';
+import { MailerService } from '../mailer/mailer.service';
 
 describe('BookingService', () => {
   let service: BookingService;
@@ -36,6 +37,16 @@ describe('BookingService', () => {
               }
             }
           }
+        },
+        {
+          provide: MailerService,
+          useValue: {
+            send: () => {
+              return new Promise((resolve, reject) => {
+                resolve('Mock mailer');
+              })
+            }
+          }
         }
       ],
     }).compile();
@@ -57,9 +68,11 @@ describe('BookingService', () => {
       paid: true
     })).toMatchObject({
       created: true,
+      paymentRequested: true,
       paymentInitialized: true,
       paymentUrl: 'http://paystack.com',
-      reference: 'refNo'
+      reference: 'refNo',
+      errors: []
     });
   })
 });

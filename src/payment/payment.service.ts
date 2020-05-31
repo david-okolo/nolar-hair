@@ -29,7 +29,8 @@ export class PaymentService {
         {
             await this.paymentRepository.save({
                 authorizationUrl: initResult.url,
-                bookingReference: initResult.reference,
+                booking: data.booking,
+                reference: initResult.reference,
                 amount: data.amount
             }).catch(e => {
                 throw e;
@@ -48,7 +49,7 @@ export class PaymentService {
         if(verification && verification.status) {
             await this.paymentRepository.update(
                 { 
-                    bookingReference: reference
+                    reference: reference
                 },
                 {
                     verified: true,

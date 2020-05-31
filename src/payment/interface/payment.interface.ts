@@ -1,3 +1,5 @@
+import { Booking } from "../../entities/booking.entity";
+
 export interface IPaymentInitializeResult {
     url: string
     accessCode: string
@@ -7,7 +9,7 @@ export interface IPaymentInitializeResult {
 export interface IPaymentInitializeArg {
     email: string
     amount: number
-    reference?: string
+    booking: Booking
     callbackUrl?: string
 }
 

@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { Booking } from "./booking.entity";
 
 @Entity()
 export class Payment {
@@ -6,7 +7,7 @@ export class Payment {
     id: number
 
     @Column()
-    bookingReference: string
+    reference: string
 
     @Column({
         type: 'varchar'
@@ -29,4 +30,11 @@ export class Payment {
         default: false
     })
     verified: boolean
+
+    @Column({nullable: true})
+    bookingId: number
+
+    @OneToOne(type => Booking, booking => booking.payment)
+    @JoinColumn()
+    booking: Booking
 }

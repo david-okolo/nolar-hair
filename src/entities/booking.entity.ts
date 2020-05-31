@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, Generated } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, Generated, OneToOne } from "typeorm";
+import { Payment } from "./payment.entity";
 
 @Entity()
 export class Booking {
@@ -23,4 +24,7 @@ export class Booking {
 
     @Column({ type: 'boolean', default: false })
     paid: boolean
+
+    @OneToOne(type => Payment, payment => payment.booking)
+    payment: Payment
 }

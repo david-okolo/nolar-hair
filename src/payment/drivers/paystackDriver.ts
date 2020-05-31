@@ -31,17 +31,17 @@ export class PaystackDriver extends PaymentDriver implements OnModuleInit {
     async initialize(data: IPaymentInitializeArg) {
 
         const result: IPaymentInitializeResult = {
-            url: 'http://paystack.com',
-            accessCode: 'code',
-            reference: 'refno'
+            url: '',
+            accessCode: '',
+            reference: ''
         }
 
         const init = await this.paystack.transaction.initialize({
             email: data.email,
-            amount: data.amount
+            amount: data.amount,
+            reference: data.booking.reference
         }).catch(e => {
-            this.logger.error(e.message, e.stack)
-            throw e;
+            this.logger.error(e.message, e.stack);
         });
 
         if(init && init.status) {
@@ -64,6 +64,21 @@ export class PaystackDriver extends PaymentDriver implements OnModuleInit {
             amount: 500,
             status: true,
             date: '01/11/2020'
+        }
+
+        const res = await this.paystack.transaction.verify(reference).catch((e: Error) => {
+            // if the call fails log it. the variable 'res' would be set to null
+            this.logger.error(e.message, e.stack);
+        });
+
+        if(res && res.status) {
+            result.amount = res.data.amount;
+            result.currency = res.data.currency;
+            result.status = res.data.status === 'success' ? true : false;
+            result.date = res.data.transaction_date;
+        } else {
+            // either the api call fails or it responds with a bad request object
+            throw new Error('Payment verification failed');
         }
 
         return result;

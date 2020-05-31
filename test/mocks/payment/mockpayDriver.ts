@@ -1,11 +1,11 @@
 
 
-import { PaymentDriver } from "../interface/payment-driver.interface";
+import { PaymentDriver } from "../../../src/payment/interface/payment-driver.interface";
 import { 
     IPaymentInitializeArg,
     IPaymentInitializeResult,
     IPaymentVerifyResult
-} from "../interface/payment.interface";
+} from "../../../src/payment/interface/payment.interface";
 
 export class MockPayDriver extends PaymentDriver {
 
@@ -16,7 +16,7 @@ export class MockPayDriver extends PaymentDriver {
         const result: IPaymentInitializeResult = {
             url: 'http://paystack.com',
             accessCode: 'code',
-            reference: 'refno'
+            reference: data.booking.reference
         }
 
         return result;

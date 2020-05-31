@@ -6,6 +6,13 @@ import { PaymentService } from '../payment/payment.service';
 import { LoggerService } from '../logger/logger.service';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '../mailer/mailer.service';
+import { Payment } from '../entities/payment.entity';
+import { MockLoggerService } from '../../test/mocks/logger/mocklogger.service';
+import { MockPaymentService } from '../../test/mocks/payment/mockpayment.service';
+import { MockBookingRepository } from '../../test/mocks/booking/booking.repository'
+import { MockPaymentRepository } from '../../test/mocks/payment/payment.repository';
+import { MockMailerService } from '../../test/mocks/mailer/mockmailer.service';
+import { BookingStatus } from './interface/booking.interface';
 
 describe('BookingService', () => {
   let service: BookingService;
@@ -16,37 +23,24 @@ describe('BookingService', () => {
         BookingService,
         {
           provide: PaymentService,
-          useValue: {
-            initializePayment: async () => {
-              return {
-                url: 'http://paystack.com',
-                accessCode: 'acode',
-                reference: 'refNo'
-              }
-            }
-          }
+          useValue: MockPaymentService
         },
-        LoggerService,
+        {
+          provide: LoggerService,
+          useValue: MockLoggerService
+        },
         ConfigService,
         {
           provide: getRepositoryToken(Booking),
-          useValue: {
-            save: async () => {
-              return {
-                reference: 'refNo'
-              }
-            }
-          }
+          useValue: MockBookingRepository
+        },
+        {
+          provide: getRepositoryToken(Payment),
+          useValue: MockPaymentRepository
         },
         {
           provide: MailerService,
-          useValue: {
-            send: () => {
-              return new Promise((resolve, reject) => {
-                resolve('Mock mailer');
-              })
-            }
-          }
+          useValue: MockMailerService
         }
       ],
     }).compile();
@@ -59,13 +53,12 @@ describe('BookingService', () => {
   });
 
   it('should accept and save new booking request', async () => {
-
     expect(await service.createBooking({
       name: 'test',
       email: 'test@test.com',
       requestedService: 'Barbing',
       requestedAppointmentTime: 1,
-      paid: true
+      paidRequest: true
     })).toMatchObject({
       created: true,
       paymentRequested: true,
@@ -74,5 +67,67 @@ describe('BookingService', () => {
       reference: 'refNo',
       errors: []
     });
+  });
+
+  it('should return details on booking', async () => {
+    expect(await service.checkBooking('refPaidVerified')).toMatchObject({
+        email: 'test@test.com',
+        paidRequest: true,
+        paymentStatus: true,
+        timeSlot: '11:00:00 AM',
+        date: 'Mon Jun 01 2020',
+        service: 'Barbing',
+        status: BookingStatus.success,
+        errors: []
+    });
   })
+
+  it('should return details on booking', async () => {
+    expect(await service.checkBooking('refPaidUnverified')).toMatchObject({
+        email: 'test@test.com',
+        paidRequest: true,
+        paymentStatus: true,
+        timeSlot: '12:00:00 PM',
+        date: 'Mon Jun 01 2020',
+        service: 'Barbing',
+        status: BookingStatus.pending,
+        errors: []
+    });
+  })
+
+  it('should return details on booking', async () => {
+    expect(await service.checkBooking('refFreeApproved')).toMatchObject({
+        email: 'test@test.com',
+        paidRequest: false,
+        paymentStatus: false,
+        timeSlot: '11:00:00 AM',
+        date: 'Mon Jun 01 2020',
+        service: 'Barbing',
+        status: BookingStatus.success,
+        errors: []
+    });
+  })
+
+  it('should return details on booking', async () => {
+    expect(await service.checkBooking('refFreeUnapproved')).toMatchObject({
+        email: 'test@test.com',
+        paidRequest: false,
+        paymentStatus: false,
+        timeSlot: '12:00:00 PM',
+        date: 'Mon Jun 01 2020',
+        service: 'Barbing',
+        status: BookingStatus.pending,
+        errors: []
+    });
+  })
+
+  it('should throw error while returning booking', async () => {
+    await expect(service.checkBooking('refError')).rejects.toThrowError(/Payment verification error/);
+  });
+
+  it('should not return details on booking', async () => {
+    const res = await service.checkBooking('refUndefined');
+    expect(res).toHaveProperty('errors');
+    expect(res.errors).toContain('Booking does not exist');
+  });
 });

@@ -1,10 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaymentService } from './payment.service';
-import { MockPayDriver } from './drivers/mockpayDriver';
+import { MockPayDriver } from '../../test/mocks/payment/mockpayDriver';
 import { PaymentDriver } from './interface/payment-driver.interface';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Payment } from '../entities/payment.entity';
 import { LoggerService } from '../logger/logger.service';
+import { MockLoggerService } from '../../test/mocks/logger/mocklogger.service';
+import { Booking } from '../entities/booking.entity';
+import { MockPaymentRepository } from '../../test/mocks/payment/payment.repository';
 
 describe('PaymentService', () => {
   let service: PaymentService;
@@ -13,23 +16,17 @@ describe('PaymentService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         PaymentService,
-        LoggerService,
+        {
+          provide: LoggerService,
+          useValue: MockLoggerService
+        },
         {
           provide: PaymentDriver,
           useClass: MockPayDriver
         },
         {
           provide: getRepositoryToken(Payment),
-          useValue: {
-            save: async () => {
-              return true;
-            },
-            update: async (condition) => {
-              if(condition.bookingReference === 'refFalse') {
-                throw new Error('(Verification Error)');
-              }
-            }
-          }
+          useValue: MockPaymentRepository
         }
       ],
     }).compile();
@@ -42,13 +39,16 @@ describe('PaymentService', () => {
   });
 
   it('should correctly initialize payment', async () => {
+    const booking = new Booking();
+    booking.reference = 'refNo';
     expect(await service.initializePayment({
       email: 'test@test.com',
-      amount: 1500
+      amount: 1500,
+      booking: booking
     })).toMatchObject({
       url: 'http://paystack.com',
       accessCode: 'code',
-      reference: 'refno'
+      reference: 'refNo'
     });
   });
 

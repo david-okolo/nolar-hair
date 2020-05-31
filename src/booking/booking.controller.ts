@@ -1,7 +1,8 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { LoggerService } from '../logger/logger.service';
+import { CheckBookingDto } from './dto/check-booking.dto';
 
 @Controller('booking')
 export class BookingController {
@@ -44,5 +45,40 @@ export class BookingController {
         }
 
         return response;
+    }
+
+    @Get('check')
+    async check(@Body() checkBookingDto: CheckBookingDto) {
+        const response = {
+            success: true,
+            message: 'Booking Check Successful',
+            data: {},
+            errors: []
+        }
+        const result = await this.bookingService.checkBooking(checkBookingDto.reference).catch((e: Error) => {
+            this.logger.error(e.message, e.stack);
+            response.errors.push(e.message);
+        });
+
+        if(!result || result.errors.length > 0)
+        {
+            response.success = false;
+            response.message = 'Booking Check Failed';
+            result ? response.errors.push(... result.errors) : response.errors;
+            return response;
+        }
+
+        response.data = Object.entries(result).reduce((acc, [key, val]) => {
+            if(key  !== 'errors')
+            {
+                acc[key] = val;
+            }
+
+            return acc;
+        }, {});
+
+        return response;
+
+
     }
 }

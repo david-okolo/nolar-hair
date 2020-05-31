@@ -58,8 +58,10 @@ export class PaymentService {
             ).catch(e => {
                 throw e;
             });
+
+            return true;
         }
 
-        return verification ? true : false;
+        return false;
     }
 }

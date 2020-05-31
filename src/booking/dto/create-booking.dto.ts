@@ -3,5 +3,5 @@ export class CreateBookingDto {
     email: string
     requestedService: string
     requestedAppointmentTime: number
-    paid: boolean
+    paidRequest: boolean
 }

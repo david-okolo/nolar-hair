@@ -16,14 +16,20 @@ export class Booking {
     @Column({ type: 'varchar' })
     email: string
 
-    @Column({ type:  'int' })
-    appointmentTime: number
+    @Column({ type:  'bigint' })
+    requestedAppointmentTime: number
+
+    @Column({ 
+        type:  'bigint',
+        nullable: true
+     })
+    approvedAppointmentTime: number
 
     @Column({ type: 'varchar' })
     service: string
 
     @Column({ type: 'boolean', default: false })
-    paid: boolean
+    paidRequest: boolean
 
     @OneToOne(type => Payment, payment => payment.booking)
     payment: Payment

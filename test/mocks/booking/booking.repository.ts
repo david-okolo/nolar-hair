@@ -6,6 +6,11 @@ export const MockBookingRepository = {
         reference: 'refNo'
       }
     },
+    find: async () => {
+      return [{
+        requestedAppointmentTime: 1592150400000
+      }];
+    },
     findOne: async (condition) => {
       const result: Booking = {
         id: 1,

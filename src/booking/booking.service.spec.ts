@@ -74,8 +74,7 @@ describe('BookingService', () => {
         email: 'test@test.com',
         paidRequest: true,
         paymentStatus: true,
-        timeSlot: '11:00:00 AM',
-        date: 'Mon Jun 01 2020',
+        timeSlot: 'Mon Jun 01 2020 11:00:00 GMT+0100 (West Africa Standard Time)',
         service: 'Barbing',
         status: BookingStatus.success,
         errors: []
@@ -87,8 +86,7 @@ describe('BookingService', () => {
         email: 'test@test.com',
         paidRequest: true,
         paymentStatus: true,
-        timeSlot: '12:00:00 PM',
-        date: 'Mon Jun 01 2020',
+        timeSlot: 'Mon Jun 01 2020 12:00:00 GMT+0100 (West Africa Standard Time)',
         service: 'Barbing',
         status: BookingStatus.pending,
         errors: []
@@ -100,8 +98,7 @@ describe('BookingService', () => {
         email: 'test@test.com',
         paidRequest: false,
         paymentStatus: false,
-        timeSlot: '11:00:00 AM',
-        date: 'Mon Jun 01 2020',
+        timeSlot: 'Mon Jun 01 2020 11:00:00 GMT+0100 (West Africa Standard Time)',
         service: 'Barbing',
         status: BookingStatus.success,
         errors: []
@@ -113,8 +110,7 @@ describe('BookingService', () => {
         email: 'test@test.com',
         paidRequest: false,
         paymentStatus: false,
-        timeSlot: '12:00:00 PM',
-        date: 'Mon Jun 01 2020',
+        timeSlot: 'Mon Jun 01 2020 12:00:00 GMT+0100 (West Africa Standard Time)',
         service: 'Barbing',
         status: BookingStatus.pending,
         errors: []
@@ -130,4 +126,14 @@ describe('BookingService', () => {
     expect(res).toHaveProperty('errors');
     expect(res.errors).toContain('Booking does not exist');
   });
+
+  it('should return valid time slots', async () => {
+    const today = new Date();
+    today.setUTCDate(today.getUTCDate() + 1)
+    today.setUTCHours(0, 0, 0, 0);
+    const timeSlots = await service.getTimeSlotsByService(14, 'Barbing');
+    console.log(timeSlots);
+    const keys = Object.keys(timeSlots);
+    expect(keys).toContain(today.getTime().toString()); // checks that the key for today exists
+  })
 });

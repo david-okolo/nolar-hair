@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { MailerService } from '../mailer/mailer.service';
 import { MailOptions } from '../mailer/interface/mailer.interface';
 import { ICheckBookingResult, BookingStatus } from './interface/booking.interface';
+import { WORK_DAY_START_NORMAL, WORK_DAY_END_NORMAL, TIME_SLOT_INTERVAL, WORK_DAY_START_SUNDAY, WORK_DAY_END_SUNDAY } from '../lib/utils/time';
 
 @Injectable()
 export class BookingService {
@@ -35,16 +36,27 @@ export class BookingService {
             errors: []
         }
 
-        const booking = await this.bookingRepository.save({
-            name: data.name,
-            email: data.email,
-            requestedAppointmentTime: data.requestedAppointmentTime,
-            service: data.requestedService,
-            paidRequest: data.paidRequest
-        }).catch(e => {
-            result.errors.push('Error saving booking to database');
-            this.logger.error(`Booking creation for 'email: ${data.email}' error - ${e.message}`, e.stack)
+        const validity = await this.timeSlotsAreValid([data.requestedAppointmentTime], data.requestedService).catch(e => {
+            throw e;
         });
+
+        let booking;
+
+        if (validity.status) {
+            booking = await this.bookingRepository.save({
+                name: data.name,
+                email: data.email,
+                requestedAppointmentTime: data.requestedAppointmentTime,
+                service: data.requestedService,
+                paidRequest: data.paidRequest
+            }).catch(e => {
+                result.errors.push('Error saving booking to database');
+                this.logger.error(`Booking creation for 'email: ${data.email}' error - ${e.message}`, e.stack)
+            });
+        } else {
+            result.errors.push('Time slot has been taken');
+            return result;
+        }
 
         if(booking && data.paidRequest)
         {
@@ -100,7 +112,6 @@ export class BookingService {
             paidRequest: false,
             paymentStatus: false,
             timeSlot: '',
-            date: '',
             service: '',
             status: BookingStatus.failed,
             errors: []
@@ -133,8 +144,7 @@ export class BookingService {
         }
 
         result.email = booking.email;
-        result.timeSlot = date.toLocaleTimeString();
-        result.date = date.toDateString();
+        result.timeSlot = date.toString();
         result.service = booking.service;
 
         if(booking.paidRequest) {
@@ -154,6 +164,86 @@ export class BookingService {
             }
         }
 
+        return result;
+    }
+
+    async timeSlotsAreValid(timestamps: number[], serviceName: string) {
+        // no paid or approved booking for the same service must have been made in that timeslot
+        const result = await this.bookingRepository.find({ 
+            where: timestamps.map(timestamp => {
+                return {
+                    requestedAppointmentTime: timestamp,
+                    service: serviceName
+                };
+            }),
+            relations: [ 'payment' ]
+        }).catch(e => {
+            throw e;
+        });
+
+        return {
+            status: result.length === 0,
+            data: new Set(result.map(booking => {
+                if(booking.payment && (booking.payment.success && booking.payment.verified)) {
+                    return Number(booking.approvedAppointmentTime ? booking.approvedAppointmentTime : booking.requestedAppointmentTime);
+                }
+
+                return 0;
+            }))
+        }
+    }
+
+    /**
+     * Returns time slots for a given period
+     * @param { number } period - number of days
+     */
+    async getTimeSlotsByService(period: number, serviceName: string): Promise<object> {
+        // build object with keys as day timestamp (convert to date) and value as an array of tomestamps for start of slots
+        const result = {};
+
+        const today = new Date();
+
+        for(let i = 0; i < period; i++) {
+
+            const timeSlots: number[] = [];
+
+            const dayOfTheMonth = today.getUTCDate();
+            today.setUTCDate(dayOfTheMonth + (i === 0 ? 0 : 1));
+
+            today.setUTCHours(0, 0, 0, 0);
+            const todayTimestamp: number = today.getTime();
+
+            if(today.getDay() > 0) { // 6 is the day code for sunday
+
+                for(let j = WORK_DAY_START_NORMAL; j < WORK_DAY_END_NORMAL; j = j + TIME_SLOT_INTERVAL) {
+                    today.setUTCHours(j, 0, 0, 0);
+                    if(today.getTime() > Date.now()) {
+                        timeSlots.push(today.getTime());
+                    }
+                }
+            } else {
+                for(let j = WORK_DAY_START_SUNDAY; j < WORK_DAY_END_SUNDAY; j = j + TIME_SLOT_INTERVAL) {
+                    today.setUTCHours(j, 0, 0, 0);
+                    if(today.getTime() > Date.now()) {
+                        timeSlots.push(today.getTime());
+                    }
+                }
+            }
+
+            if(timeSlots.length > 0) {
+                const validity = await this.timeSlotsAreValid(timeSlots, serviceName).catch(e => {
+                    throw e;
+                });
+    
+                if(validity.status) {
+                    result[todayTimestamp] = timeSlots;
+                } else {
+                    result[todayTimestamp] = timeSlots.filter(timeSlot => {
+                        return !validity.data.has(timeSlot);
+                    })
+                }
+            }
+        }
         return result;
     }
 }

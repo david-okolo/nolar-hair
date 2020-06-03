@@ -1,3 +1,5 @@
+import { ICheckBookingResult, BookingStatus } from "../../../src/booking/interface/booking.interface";
+
 export class MockBookingService {
 
     async createBooking () {
@@ -11,14 +13,14 @@ export class MockBookingService {
         };
     }
 
-    async checkBooking(reference) {
+    async checkBooking(reference): Promise<ICheckBookingResult> {
 
-        const response = {
+        const response: ICheckBookingResult = {
             email: 'test@test.com',
-            paid: true,
-            status: 'confirmed',
-            timeSlot: '11:00 AM',
-            date: '2020-05-30',
+            paidRequest: true,
+            paymentStatus: true,
+            status: BookingStatus.success,
+            timeSlot: 'Mon Jun 01 2020 11:00:00 GMT+0100 (West Africa Standard Time)',
             service: 'Barbing',
             errors: []
         };
@@ -26,13 +28,13 @@ export class MockBookingService {
         if(reference === 'refPaid') {
             return response;
         } else if(reference === 'refNo') {
-            response.paid = false;
-            response.status = 'pending';
+            response.paidRequest = false;
+            response.paymentStatus = false;
+            response.status = BookingStatus.pending;
             return response;
         } else {
-            return {
-            errors: ['Booking does not exist']
-            }
+            response.errors.push('Booking does not exist');
+            return response;
         }
     }
   }

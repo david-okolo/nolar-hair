@@ -9,7 +9,6 @@ export interface ICheckBookingResult {
     paidRequest: boolean
     paymentStatus: boolean
     timeSlot: string
-    date: string
     service: string
     status: BookingStatus
     errors: string[]

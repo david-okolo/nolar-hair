@@ -65,11 +65,11 @@ describe('Booking Controller', () => {
       message: 'Booking Check Successful',
       data: {
         email: 'test@test.com',
-        paid: true,
-        timeSlot: '11:00 AM',
-        date: '2020-05-30',
+        paidRequest: true,
+        paymentStatus: true,
+        timeSlot: 'Mon Jun 01 2020 11:00:00 GMT+0100 (West Africa Standard Time)',
         service: 'Barbing',
-        status: 'confirmed'
+        status: 'success'
       },
       errors: []
     };
@@ -83,9 +83,9 @@ describe('Booking Controller', () => {
       message: 'Booking Check Successful',
       data: {
         email: 'test@test.com',
-        paid: false,
-        timeSlot: '11:00 AM',
-        date: '2020-05-30',
+        paidRequest: false,
+        paymentStatus: false,
+        timeSlot: 'Mon Jun 01 2020 11:00:00 GMT+0100 (West Africa Standard Time)',
         service: 'Barbing',
         status: 'pending'
       },

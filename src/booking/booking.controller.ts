@@ -3,6 +3,8 @@ import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { LoggerService } from '../logger/logger.service';
 import { CheckBookingDto } from './dto/check-booking.dto';
+import { BookingTimeSlotDto } from './dto/timeslot-booking.dto';
+import { DEFAULT_PERIOD } from '../lib/utils/time';
 
 @Controller('booking')
 export class BookingController {
@@ -10,6 +12,7 @@ export class BookingController {
         private bookingService: BookingService,
         private logger: LoggerService
         ) {}
+
     @Post()
     async create(@Body() createBookingDto: CreateBookingDto) {
 
@@ -78,7 +81,27 @@ export class BookingController {
         }, {});
 
         return response;
+    }
 
+    @Get('getTimeSlots')
+    async getTimeSlots(@Body() bookingTimeSlotDto: BookingTimeSlotDto) {
+        const response = {
+            success: false,
+            message: 'Failed to fetch time slots',
+            data: {},
+            errors: []
+        }
 
+        const result = await this.bookingService.getTimeSlotsByService(DEFAULT_PERIOD, bookingTimeSlotDto.serviceName).catch(e => {
+            this.logger.error(e.message, e.stack);
+        });
+
+        if(result) {
+            response.success = true;
+            response.message = 'Time slots fetched successfully'
+            response.data = result;
+        }
+
+        return response;
     }
 }

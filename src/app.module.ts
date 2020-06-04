@@ -13,6 +13,9 @@ import { ViewModule } from './view/view.module';
 import { StoreModule } from './store/store.module';
 import { Service } from './entities/service.entity';
 import { ServiceModule } from './service/service.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { User } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -29,7 +32,7 @@ import { ServiceModule } from './service/service.module';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [Booking, Payment, Service],
+        entities: [Booking, Payment, Service, User],
         synchronize: configService.get<string>('NODE_ENV') === 'production' ? false : true // remove in production
       }),
       inject: [ConfigService]
@@ -39,7 +42,9 @@ import { ServiceModule } from './service/service.module';
     MailerModule,
     ViewModule,
     StoreModule,
-    ServiceModule
+    ServiceModule,
+    AuthModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],

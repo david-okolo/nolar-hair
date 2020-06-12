@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, BadRequestException } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { LoggerService } from '../logger/logger.service';
 import { CheckBookingDto } from './dto/check-booking.dto';
 import { BookingTimeSlotDto } from './dto/timeslot-booking.dto';
 import { DEFAULT_PERIOD } from '../lib/utils/time';
+import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 
 @Controller('booking')
 export class BookingController {
@@ -104,4 +105,18 @@ export class BookingController {
 
         return response;
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('edit')
+    async editBooking(@Body() booking: any) {
+        await this.bookingService.update(booking).catch(e => {
+            throw new BadRequestException(e.message);
+        });
+
+        return {
+            success: true,
+            message: 'Booking Updated'
+        }
+    }
+
 }

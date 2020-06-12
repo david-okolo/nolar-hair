@@ -16,9 +16,15 @@ import { ServiceModule } from './service/service.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { User } from './entities/user.entity';
+import { Product } from './entities/product.entity';
+import { ProductTransaction } from './entities/productTransaction.entity';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './images'
+    }),
     LoggerModule,
     ConfigModule.forRoot({
       envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
@@ -32,7 +38,7 @@ import { User } from './entities/user.entity';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [Booking, Payment, Service, User],
+        entities: [Booking, Payment, Service, User, Product, ProductTransaction],
         synchronize: configService.get<string>('NODE_ENV') === 'production' ? false : true // remove in production
       }),
       inject: [ConfigService]

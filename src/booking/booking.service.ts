@@ -246,4 +246,39 @@ export class BookingService {
         }
         return result;
     }
+
+    // vulnerable
+    async update(data: any) {
+
+        const { id, ...update } = data;
+
+        await this.bookingRepository.update(id, update).catch(e => {
+            this.logger.error(`Updating booking id ${id}`, e.stack);
+            throw new Error('Booking failed to update')
+        })
+
+        const booking = await this.bookingRepository.findOne(id).catch(e => {
+            this.logger.error(`Updating booking id ${id}`)
+        });
+
+        if (booking) {
+            const mail: MailOptions = {
+                to: booking.email,
+                subject: 'Booking Update',
+                viewName: 'bookingUpdated',
+                input: {
+                    recipientName: booking.name,
+                    reference: booking.reference
+                }
+            }
+            this.mailerService.send(mail).then((response) => {
+                this.logger.info(`[Mail] response`, JSON.stringify(response));
+            }).catch(e => {
+                this.logger.error(`[Mail] sending to ${booking.email} failed`, e.stack);
+            });
+        }
+        
+
+        return true;
+    }
 }

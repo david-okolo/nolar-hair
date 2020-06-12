@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    min-height: 100vh;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+nav > div {
+    width: 200px;
+    height: 50px;
+    background-color: aqua;
+}
+
+@media(min-width: 992px) {
+    nav {
+        justify-content: space-around;
+    }
+}
+

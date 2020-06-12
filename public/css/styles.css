@@ -1,29 +1,117 @@
 body {
     margin: 0;
     padding: 0;
+    font-family: 'Darker Grotesque', sans-serif;
 }
 
 header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
+    align-items: center;
 }
 
 nav {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    justify-content: space-around;
+    width: 80%;
 }
 
 nav > div {
-    width: 200px;
-    height: 50px;
-    background-color: aqua;
+    display: flex;
+    align-items: center;
+    height: 102px;
+    text-transform: uppercase;
+}
+
+nav li {
+    font-size: 16px;
+    line-height: 19px;
+    list-style-type: none;
+    font-weight: 600;
+    height: 24px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.nav-start {
+    position: relative;
+    font-size: 36px;
+    line-height: 72px;
+    text-transform: lowercase;
+    font-family: 'Cormorant', serif;
+    text-align: center;
+}
+
+.nav-start .logo {
+    position: relative;
+    bottom: 10px;
+}
+
+.nav-center {
+    flex: 1;
+    justify-content: center;
+    display: flex;
+}
+
+.nav-center .nav-links {
+    width: 480px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-end li {
+    text-align: right;
+}
+
+.carousel-controls {
+    width: 80%;
+    height: 66px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.carousel-options {
+    width: 90px;
+    height: 6px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.carousel-option {
+    width: 6px;
+    height: 6px;
+    background-color: #000;
+    border-radius: 40px;
+}
+
+.carousel-option-active {
+    width: 12px;
+}
+
+.jumbotron {
+    width: 80%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.jumbotron h1 {
+    font-family: 'Cormorant', serif;
+    font-size: 64px;
+    font-weight: 300;
+    margin-bottom: 10%;
 }
 
 @media(min-width: 992px) {
     nav {
-        justify-content: space-around;
+        /* justify-content: space-around; */
     }
 }
 

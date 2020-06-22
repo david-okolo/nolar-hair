@@ -1,4 +1,6 @@
 import Paystack from 'paystack';
+import fetch from 'node-fetch';
+import axios from 'axios';
 
 import { PaymentDriver } from "../interface/payment-driver.interface";
 import { 
@@ -39,7 +41,7 @@ export class PaystackDriver extends PaymentDriver implements OnModuleInit {
         const init = await this.paystack.transaction.initialize({
             email: data.email,
             amount: data.amount,
-            reference: data.booking.reference
+            ...data.reference && {reference: data.reference}
         }).catch(e => {
             this.logger.error(e.message, e.stack);
         });
@@ -62,7 +64,7 @@ export class PaystackDriver extends PaymentDriver implements OnModuleInit {
         const result: IPaymentVerifyResult = {
             currency: 'NGN',
             amount: 500,
-            status: true,
+            status: 'failed',
             date: '01/11/2020'
         }
 
@@ -74,7 +76,7 @@ export class PaystackDriver extends PaymentDriver implements OnModuleInit {
         if(res && res.status) {
             result.amount = res.data.amount;
             result.currency = res.data.currency;
-            result.status = res.data.status === 'success' ? true : false;
+            result.status = res.data.status;
             result.date = res.data.transaction_date;
         } else {
             // either the api call fails or it responds with a bad request object
@@ -82,5 +84,37 @@ export class PaystackDriver extends PaymentDriver implements OnModuleInit {
         }
 
         return result;
+    }
+
+    async refund(reference: string, amount: number, reason) {
+        const headers = {
+            'Authorization': 'Bearer '+this.configService.get<string>('PAYSTACK_SECRET_KEY'),
+            'Content-Type': 'application/json'
+        }
+        const body = {
+            transaction: reference,
+            amount: amount, 
+            /* eslint-disable */
+            merchant_note: reason,
+            /* eslint-disable */
+            currency: 'NGN'
+        };
+
+        const response = await axios.post('https://api.paystack.co/refund', body, {
+            headers: headers
+        });
+
+        if(response.statusText === 'OK') {
+            const { data } = response;
+            if(data.status) {
+                return {
+                    status: data.data.status
+                }
+            } else {
+                throw new Error('Refund Error: Process was unsuccessful for '+reference)
+            }
+        } else {
+            throw new Error('Refund Error: Error contacting paystack')
+        }
     }
 }

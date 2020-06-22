@@ -8,7 +8,7 @@ export const imageFileFilter = (req, file, callback) => {
 };
 
 export const multerStorage = diskStorage({
-    destination: './images',
+    destination: './public/images',
     filename: (req, file, cb) => {
         const fileName = file.originalname.split('.');
         const extension = fileName[fileName.length - 1];

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -17,8 +17,11 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { User } from './entities/user.entity';
 import { Product } from './entities/product.entity';
-import { ProductTransaction } from './entities/productTransaction.entity';
+import { StoreTransaction } from './entities/storeTransaction.entity';
 import { MulterModule } from '@nestjs/platform-express';
+import { FrontendMiddleware } from './frontend.middleware';
+import { StoreCategory } from './entities/storeCategory.entity';
+import { CartItem } from './entities/cartItem.entity';
 
 @Module({
   imports: [
@@ -38,7 +41,7 @@ import { MulterModule } from '@nestjs/platform-express';
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [Booking, Payment, Service, User, Product, ProductTransaction],
+        entities: [Booking, Payment, Service, User, Product, StoreTransaction, StoreCategory, CartItem],
         synchronize: configService.get<string>('NODE_ENV') === 'production' ? false : true // remove in production
       }),
       inject: [ConfigService]
@@ -55,4 +58,6 @@ import { MulterModule } from '@nestjs/platform-express';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  
+}

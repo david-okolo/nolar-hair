@@ -25,28 +25,33 @@ export class PaymentService {
             throw e;
         });
 
+        let payment: Payment;
         if(initResult)
         {
-            await this.paymentRepository.save({
+            payment = await this.paymentRepository.save({
                 authorizationUrl: initResult.url,
-                booking: data.booking,
+                booking: data?.booking,
                 reference: initResult.reference,
                 amount: data.amount
             }).catch(e => {
                 throw e;
             });
+            initResult.paymentEntity = payment;
         }
 
         return initResult || null;
     }
 
-    async verifyPayment(reference: string): Promise<boolean> {
+    async verifyPayment(reference: string): Promise<{
+        success: boolean
+        status: string
+    }> {
 
         const verification = await this.driver.verify(reference).catch(e => {
             throw e;
         });
 
-        if(verification && verification.status) {
+        if(verification && verification.status === 'success') {
             await this.paymentRepository.update(
                 { 
                     reference: reference
@@ -59,9 +64,75 @@ export class PaymentService {
                 throw e;
             });
 
-            return true;
+            return {
+                success: true,
+                status: verification.status
+            };
+        } else if (verification) {
+            return {
+                success: true,
+                status: verification.status
+            }
         }
 
-        return false;
+        return {
+            success: false,
+            status: 'failed'
+        };
+    }
+
+    async refundPayment(reference: string, amount: number, reason: string) {
+
+        
+        const payment = await this.paymentRepository.findOne({
+            where: {
+                reference
+            }
+        }).catch(e => {
+            this.logger.error(e)
+            throw e;
+        })
+
+        if(payment && payment.refundInit === false) {
+            const response = await this.driver.refund(reference, amount, reason).catch(e => {
+                throw e;
+            });
+
+            if(response.status) {
+                payment.refundInit = true
+                this.paymentRepository.save(payment)
+            }
+
+            return {
+                ...response,
+                message: 'Refund Initialized'
+            }
+        } else if(payment) {
+            return {
+                status: 'failed',
+                message: 'Refund has already been initialized'
+            }
+        }
+
+        // if(verification && verification.status) {
+        //     await this.paymentRepository.update(
+        //         { 
+        //             reference: reference
+        //         },
+        //         {
+        //             verified: true,
+        //             success: true
+        //         }
+        //     ).catch(e => {
+        //         throw e;
+        //     });
+
+        //     return true;
+        // }
+
+        return {
+            status: 'failed',
+            message: 'Refund failed'
+        };
     }
 }

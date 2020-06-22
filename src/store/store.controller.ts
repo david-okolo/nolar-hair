@@ -4,6 +4,7 @@ import { JwtAuthGuard } from '../auth/guard/jwt.guard';
 import { CreateProductDto } from './dto/createProduct.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerStorage, imageFileFilter } from '../lib/utils/storage';
+import { BuyProductsDto } from './dto/buyproducts.dto';
 
 @Controller('store')
 export class StoreController {
@@ -19,9 +20,30 @@ export class StoreController {
         return {
             success: true,
             message: 'Product list successfully fetched',
-            data: {
-                products: productList
-            }
+            data: productList
+        }
+    }
+
+    @Post('pay')
+    async getLink(@Body() body: BuyProductsDto) {
+        const data = await this.storeService.buyProducts(body);
+
+        return {
+            success: true,
+            message: 'Cart Payment Initialized',
+            data
+        }
+    }
+
+    @Post('verify')
+    async verifyPayment(@Body() body: any) {
+        const result = await this.storeService.verify(body.reference);
+
+        return {
+            success: result.verified,
+            status: result.status,
+            message: result.verified ? 'Payment Successful' : 'Payment Not Successful',
+            ...result.errors.length > 0 && {errors: result.errors}
         }
     }
 
@@ -35,7 +57,7 @@ export class StoreController {
         const { imageUrl, ...rest } = newProduct;
         const created = await this.storeService.createProduct({
             ...rest,
-            imageUrl: file.path
+            imageUrl: file.path.substr(6) //removes the public
         })
 
         if (!created) {

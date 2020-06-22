@@ -27,10 +27,16 @@ export class FlutterwaveDriver extends PaymentDriver {
         const result: IPaymentVerifyResult = {
             currency: 'NGN',
             amount: 500,
-            status: true,
+            status: 'failed',
             date: '01/11/2020'
         }
 
         return result;
+    }
+
+    async refund(reference: string, amount: number, reason: string) {
+        return {
+            status: false
+        }
     }
 }

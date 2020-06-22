@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
+import { StoreCategory } from './storeCategory.entity';
+import { CartItem } from './cartItem.entity';
 
 @Entity()
 export class Product {
@@ -21,4 +23,10 @@ export class Product {
 
     @Column()
     count: number
+
+    @ManyToOne(type => StoreCategory, storeCategory => storeCategory.products)
+    storeCategory: StoreCategory
+
+    @OneToMany(type => CartItem, cartItem => cartItem.product)
+    cartItems: CartItem[]
 }

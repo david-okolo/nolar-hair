@@ -3,5 +3,6 @@ export class CreateProductDto {
     price: number
     imageUrl: string
     discount?: number
-    count?: number
+    count: number
+    storeCategoryId: number
 }

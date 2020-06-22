@@ -67,7 +67,8 @@ export class BookingService {
             const payment = await this.paymentService.initializePayment({
                 email: data.email,
                 amount: this.configService.get<number>('BOOKING_PRICE_IN_KOBO'),
-                booking: booking
+                booking: booking,
+                reference: booking.reference
             }).catch(e => {
                 result.errors.push(`Error initializing payment using '${this.paymentService.driverName}'`);
                 result.paymentInitialized = false;
@@ -117,6 +118,8 @@ export class BookingService {
             errors: []
         }
 
+        await this.paymentService.verifyPayment(reference);
+
         // check database for booking by reference
         const booking = await this.bookingRepository.findOne(
             {
@@ -135,11 +138,11 @@ export class BookingService {
         }
 
         // if entity has a paid value of true, check the payment table for the status of the transaction
-        let date = new Date(Number(booking.requestedAppointmentTime));
+        let date = Number(booking.requestedAppointmentTime);
         result.status = BookingStatus.pending;
 
         if(booking.approvedAppointmentTime) { // if the approved appointment time is set then the booking request has been approved by owner
-            date = new Date(Number(booking.approvedAppointmentTime));
+            date = Number(booking.approvedAppointmentTime);
             result.status = BookingStatus.success
         }
 

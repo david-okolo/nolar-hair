@@ -51,7 +51,7 @@ export class BookingController {
         return response;
     }
 
-    @Get('check')
+    @Post('check')
     async check(@Body() checkBookingDto: CheckBookingDto) {
         const response = {
             success: true,
@@ -84,7 +84,7 @@ export class BookingController {
         return response;
     }
 
-    @Get('getTimeSlots')
+    @Post('getTimeSlots')
     async getTimeSlots(@Body() bookingTimeSlotDto: BookingTimeSlotDto) {
         const response = {
             success: false,

@@ -18,7 +18,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('auth/register')
   async register(@Body() createUser: any) {
     await this.authService.register(createUser).catch(e => {

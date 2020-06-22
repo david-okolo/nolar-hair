@@ -31,6 +31,12 @@ export class Payment {
     })
     verified: boolean
 
+    @Column({
+        type: 'boolean',
+        default: false
+    })
+    refundInit: boolean
+
     @Column({nullable: true})
     bookingId: number
 

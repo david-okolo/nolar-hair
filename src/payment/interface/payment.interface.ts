@@ -4,12 +4,14 @@ export interface IPaymentInitializeResult {
     url: string
     accessCode: string
     reference: string
+    paymentEntity?: any
 }
 
 export interface IPaymentInitializeArg {
     email: string
     amount: number
-    booking: Booking
+    reference?: string
+    booking?: Booking
     callbackUrl?: string
 }
 
@@ -17,5 +19,5 @@ export interface IPaymentVerifyResult {
     currency: string
     amount: number
     date: string
-    status: boolean
+    status: string
 }

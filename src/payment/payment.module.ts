@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, HttpModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PaymentService } from './payment.service';
 import { PaymentDriver } from './interface/payment-driver.interface';
@@ -9,7 +9,7 @@ import { LoggerModule } from '../logger/logger.module';
 import { PaymentController } from './payment.controller';
 
 @Module({
-  imports: [ConfigModule, TypeOrmModule.forFeature([Payment]), LoggerModule],
+  imports: [ConfigModule, TypeOrmModule.forFeature([Payment]), LoggerModule, HttpModule],
   exports: [PaymentService],
   providers: [
     PaymentService,

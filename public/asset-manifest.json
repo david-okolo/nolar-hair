@@ -1,0 +1,41 @@
+{
+  "files": {
+    "main.css": "/static/css/main.8f5b1ccc.chunk.css",
+    "main.js": "/static/js/main.986ba858.chunk.js",
+    "main.js.map": "/static/js/main.986ba858.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.3738857c.js",
+    "runtime-main.js.map": "/static/js/runtime-main.3738857c.js.map",
+    "static/css/2.9a547d2e.chunk.css": "/static/css/2.9a547d2e.chunk.css",
+    "static/js/2.0c1e0dac.chunk.js": "/static/js/2.0c1e0dac.chunk.js",
+    "static/js/2.0c1e0dac.chunk.js.map": "/static/js/2.0c1e0dac.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.f73f558d0a7341164b51c8087f2a0168.js": "/precache-manifest.f73f558d0a7341164b51c8087f2a0168.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.9a547d2e.chunk.css.map": "/static/css/2.9a547d2e.chunk.css.map",
+    "static/css/main.8f5b1ccc.chunk.css.map": "/static/css/main.8f5b1ccc.chunk.css.map",
+    "static/js/2.0c1e0dac.chunk.js.LICENSE.txt": "/static/js/2.0c1e0dac.chunk.js.LICENSE.txt",
+    "static/media/HKGrotesk-Bold.ttf": "/static/media/HKGrotesk-Bold.43ead254.ttf",
+    "static/media/HKGrotesk-Regular.ttf": "/static/media/HKGrotesk-Regular.10774ee6.ttf",
+    "static/media/barbing.jpg": "/static/media/barbing.c20e100d.jpg",
+    "static/media/bg-1-480.jpg": "/static/media/bg-1-480.546d4c86.jpg",
+    "static/media/bg-1.jpg": "/static/media/bg-1.ba9c50eb.jpg",
+    "static/media/bg-2.jpg": "/static/media/bg-2.cdaa7004.jpg",
+    "static/media/consultation.jpg": "/static/media/consultation.1c63b335.jpg",
+    "static/media/store-1.jpg": "/static/media/store-1.a35915e5.jpg",
+    "static/media/store-2.jpg": "/static/media/store-2.b9e11925.jpg",
+    "static/media/store-3.jpg": "/static/media/store-3.fd34bf27.jpg",
+    "static/media/store-4.jpg": "/static/media/store-4.13c5f174.jpg",
+    "static/media/tile-1.jpg": "/static/media/tile-1.d1b17096.jpg",
+    "static/media/tile-2.jpg": "/static/media/tile-2.1a99eb2d.jpg",
+    "static/media/tile-3.jpg": "/static/media/tile-3.98e2de97.jpg",
+    "static/media/tile-4.jpg": "/static/media/tile-4.89380005.jpg",
+    "static/media/wellness.jpg": "/static/media/wellness.7e80c914.jpg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3738857c.js",
+    "static/css/2.9a547d2e.chunk.css",
+    "static/js/2.0c1e0dac.chunk.js",
+    "static/css/main.8f5b1ccc.chunk.css",
+    "static/js/main.986ba858.chunk.js"
+  ]
+}

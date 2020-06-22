@@ -40,6 +40,8 @@ export class BookingService {
             throw e;
         });
 
+        // console.log(validity)
+
         let booking;
 
         if (validity.status) {
@@ -90,7 +92,8 @@ export class BookingService {
                 viewName: 'bookingRequested',
                 input: {
                     recipientName: data.name,
-                    serviceRequested: data.requestedService
+                    serviceRequested: data.requestedService,
+                    reference: booking.reference
                 }
             };
             

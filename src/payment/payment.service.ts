@@ -68,7 +68,7 @@ export class PaymentService {
                 success: true,
                 status: verification.status
             };
-        } else if (verification) {
+        } else if (verification && verification.status === 'reversed') {
             return {
                 success: true,
                 status: verification.status

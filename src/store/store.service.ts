@@ -114,9 +114,13 @@ export class StoreService {
             return result
         }
 
-        const refund = await this.paymentService.refundPayment(reference, totalRefund * 100, `Item(s) were already purchased by someone else while transaction with reference ${reference} was being processed`).catch(e => {
-            console.log(e)
-        })
+        let refund;
+
+        if(totalRefund !== 0) {
+            refund = await this.paymentService.refundPayment(reference, totalRefund * 100, `Item(s) were already purchased by someone else while transaction with reference ${reference} was being processed`).catch(e => {
+                this.logger.error(e)
+            })
+        }
 
         transaction.amountPaid = transaction.amount - totalRefund;
         transaction.amountRefunded = totalRefund;
